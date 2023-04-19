@@ -7,10 +7,12 @@ using namespace std;
 int maximun_planar_subset(vector<vector<int>> &, int**, int, int);
 void print_cut(vector<int> &, int**, int,int);
 
+fstream fout;
+
 int main(int argc, char* argv[]){
     
     fstream fin(argv[1]);
-    fstream fout;
+    
     fout.open(argv[2],ios::out);
     int chord_num;
     fin >> chord_num;
@@ -28,7 +30,7 @@ printf("input done");
         M[i] = new int [chord_num];
         cut[i] = new int [chord_num];
         M[i][i] = 0;
-        cut[i][i] = i;
+        cut[i][i] = -1;
     }
 
     
@@ -56,6 +58,7 @@ printf("input done");
     
 
     printf("%d\n", M[0][chord_num-1]);
+    fout << M[0][chord_num-1] << endl;
 
     print_cut(chords, cut, 0, chord_num-1);
     
@@ -67,7 +70,22 @@ printf("input done");
     return 0;
 }
 void print_cut(vector<int> &chords,int** cut, int start, int end){
-    
+    if(start>end){
+        return;
+    }
+    if(cut[start][end] == cut[start][end-1]){
+        print_cut(chords, cut, start, end-1);
+        return;
+    }
+    int k = cut[start][end];
+    if(k!=-1){
+        print_cut(chords, cut, start, k-1);
+        printf("%d %d\n", k, end);
+        fout << k << " " << end << endl;
+        print_cut(chords, cut, k+1, end-1);
+        
+    }
+
 }
 int maximun_planar_subset(vector<vector<int>> &chords, int** M, int start, int end){
     if(M[start][end] != -1){
